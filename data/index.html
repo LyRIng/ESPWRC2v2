@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>ESPWRC2 Status</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Foundation CSS framework (Bootstrap and jQueryUI also supported) -->
+    <link rel='stylesheet' href='/foundation.min.css'>
+    <script src="/jquery-3.2.1.min.js"></script>
+    <style>
+    .radius { border-radius: 3px; }
+    .button { border-radius: 5px; }
+    .callout { background-color: #ddd; }
+    </style>
+  <script>
+    /* global $, alert */  /* for eslint */
+
+    function ptime (date) {
+      var zeroPad = function (nNum, nPad) {
+        return ('' + (Math.pow(10, nPad) + nNum)).slice(1);
+      };
+      return zeroPad(date.getUTCHours(), 2) +
+              ':' +
+              zeroPad(date.getUTCMinutes(), 2) +
+              ':' +
+              zeroPad(date.getUTCSeconds(), 2) +
+              ' ' +
+              zeroPad(date.getUTCFullYear(), 4) +
+              '/' +
+              zeroPad(date.getUTCMonth() + 1, 2) +
+              '/' +
+              zeroPad(date.getUTCDate(), 2);
+    }
+
+    var statusTime;
+    var intervalHandle = null;
+    function getStatus () {
+      if (intervalHandle) window.clearInterval(intervalHandle);
+      $.getJSON('status', function (data) {
+        for (var i = 0; i < 8; i++) {
+          let b = $('#zs' + i);
+          if (data['zone' + i] === 'on') {
+            b.removeClass('success');
+            b.addClass('alert');
+          } else {
+            b.removeClass('alert');
+            b.addClass('success');
+          }
+        }
+        statusTime = data.time + data.offsetGMT;
+        var timestr = ptime(new Date(statusTime * 1000)) + ' (Timezone Offset = ' + data.offsetGMT + ')';
+        if (statusTime < 10000000) {
+          timestr = 'Time not Set';
+        }
+        $('.hostname').text(data.host);
+        document.title = data.host + ' Status';
+        $('#stime').text(timestr);
+        intervalHandle = window.setInterval(function () {
+          statusTime++;
+          var timestr = ptime(new Date(statusTime * 1000)) + ' (Timezone Offset = ' + data.offsetGMT + ')';
+          if (statusTime < 10000000) {
+            timestr = 'Time not Set';
+          }
+          $('#stime').text(timestr);
+        }, 1000);
+      });
+    }
+
+    $(function () {
+      $.ajaxSetup({ cache: false });
+
+      $('button').filter(function () {
+        return this.id.match(/^zs([\d])/);
+      }).click(function () {
+        let mm = this.id.match(/^zs([\d])/);
+        $.get('/toggle', { zone: mm[1] }, function () {
+          getStatus();
+        });
+      });
+
+      $('#zclear').click(function () {
+        $.get('/clear', function (data) {
+          getStatus();
+        });
+      });
+
+      $('#restart').click(function () {
+        $.get('/restart', function (data) {
+          alert(data);
+        });
+      });
+
+      $('#refresh').click(function () {
+        getStatus();
+      });
+
+      $('#settime').click(function () {
+        $.get('/settime', {
+          time: new Date().getTime() / 1000 | 0,
+          offset: new Date().getTimezoneOffset() * -60 }, function () {
+            getStatus();
+          });
+      });
+
+      getStatus();
+    });
+   </script>
+  </head>
+  <body>
+    <div class="row">
+      <div class="large-12 columns">
+        <div class="panel">
+          <h2><span class="hostname">ESPWRC2</span> Status</h2>
+        </div>
+      </div>
+    </div>
+    <div class="row" >
+      <div class="large-2 columns">
+        <a href="setup.html" class='button'>Setup</a>
+      </div>
+      <div class="large-2 columns">
+        <a href="term.html" class='button'>BTerminal</a>
+      </div>
+      <div class="large-2 columns">
+        <a href="config.html" class='button'>Configuracion</a>
+      </div>
+      <div class="large-2 columns">
+        <button id='refresh' class='button'>Mediciones</button>
+      </div>
+      <div class="large-2 columns">
+        <button id='restart' class='button'>Reinicio</button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="small-12 columns">
+        <div class="panel">
+          <h3>Estado</h3>
+          <div class="row">
+            <div class="small-12 columns panel callout radius">
+              <div class="row">
+                <span class='small-4 columns '>Fecha/Hora</span>
+                <span id='stime' class='small-6 columns'>??????</span>
+                <button id='settime' class='button tiny small-2 columns'>Setear Fecha/Hora dde Browser</button>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="small-12 columns panel callout  radius ">
+              <div class="row small-up-12 ">
+                <div class="column column-block text-center">
+                  <!-- <button id='zclear' class='button'>ConexionCL2 05.2022</button> -->
+                  <img src='PWRC2INTIv1.jpg' style='position: relative; width:65%'>
+                </div>
+              </div>
+              <div class="row small-up-4 ">
+                <div class="column column-block text-center">
+                  <!--<button id='zs0' class='button'>Lanzar Prueba</button> -->
+                </div>
+                <div class="column column-block text-center">
+                  <!--<button id='zs1' class='button'>Relanzar Prueba</button-->
+                </div>
+                <div class="column column-block text-center">
+                  <!-- <button id='zs2' class='button'>ConfigurarCanales</button> -->
+                </div>
+                <div class="column column-block text-center">
+                  <!-- <button id='zs3' class='button'>EXTerminal</button> -->
+                </div>
+              </div>
+              <div class="row small-up-4 ">
+                <div class="column column-block text-center">
+                  <!-- <button id='zs4' class='button'>F1</button> -->
+                </div>
+                <div class="column column-block text-center">
+                  <!-- <button id='zs5' class='button'>F2</button> -->
+                </div>
+                <div class="column column-block text-center">
+                  <!-- <button id='zs6' class='button'>F3</button> -->
+                </div>
+                <div class="column column-block text-center">
+                  <!-- <button id='zs7' class='button'>F4</button> -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

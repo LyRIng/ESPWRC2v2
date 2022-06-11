@@ -1,0 +1,66 @@
+{
+	"title": "Configuration",
+	"type": "object",
+	"properties":
+	{
+		"host":
+		{
+			"title": "Host Name",
+			"description": "'*' for a generated unique hostname.",
+			"type": "string",
+			"default":"*",
+			"propertyOrder": 10
+		},
+		"ssid":
+		{
+			"title": "Your access point SSID (your router).",
+			"description": "Blank to disable connecting to an access point. * means connect to the last one used.",
+			"type": "string",
+			"default":"*",
+			"propertyOrder": 20
+		},
+		"password":
+		{
+			"title": "Password of your access point.",
+			"type": "string",
+			"format": "password",
+			"default":"",
+			"propertyOrder": 30
+		},
+		"assid":
+		{
+			"title": "SSID when acting as an access point.",
+			"description": "Blank will create a suitable ssid.",
+			"type": "string",
+			"default":"",
+			"propertyOrder": 40
+		},
+		"apassword":
+		{
+			"title": "Password when acting as an access point.",
+			"description": "Blank for no password. (Passwords shorter than 8 characters results in no password)",
+			"type": "string",
+			"format": "password",
+			"default":"",
+			"propertyOrder": 50
+		},
+		"offsetGMT":
+		{
+			"title": "Timezone Offset (seconds)",
+			"description": "-1 means no offset is specified.  Defaults to 0 (GMT), or it uses the last one saved in the device.",
+			"type": "integer",
+			"default": -1,
+			"minimum":-172800,
+			"maximum":172800,
+			"propertyOrder": 60
+		},
+		"timeServer":
+		{
+			"title": "NTP Timeserver",
+			"description": "Blank to disable NTP.",
+			"type": "string",
+			"default": "pool.ntp.org",
+			"propertyOrder":750
+		}
+	}
+}

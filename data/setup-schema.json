@@ -1,0 +1,141 @@
+{
+	"title": "Setup",
+	"type": "object",
+	"properties":
+	{
+		"currTime": {
+				"title": "Hora a setear",
+				"description": "Hora actual  HH:MM",
+				"type": "string",
+				"format": "time",
+				"required": true,
+				"maxLength": 5,
+				"propertyOrder": 10
+		},
+        "currDate": {
+				"title": "Fecha a setear",
+				"description": "Fecha según formato (YYYY-MM-DD)",
+				"type": "string",
+				"format": "date",
+				"maxLength": 10,
+				"propertyOrder": 12
+		},
+        "TimeSave": {
+				"title": "TiempoAlm",
+				"type": "string",
+				"enum": [
+					"1 Minuto",
+					"5 Minutos",
+					"10 Minutos",
+					"15 Minutos"
+				],
+				"propertyOrder": 14
+		},
+        "NomEstacion":
+		{
+			"title": "Nombre Estacion",
+			"description": "Nombre de la PWRC2",
+			"type": "string",
+			"default":"*",
+			"propertyOrder": 15
+		},
+		"IDEstacion":
+		{
+			"title": "ID Estación PWRC2.",
+			"description": "El ID del PWRC2",
+			"type": "string",
+			"default":"*",
+			"propertyOrder": 20
+		},
+        "NroBinsCompl": {
+				"title": "Nro bins Compl.",
+				"description": "Numero de bins para completar prueba",
+				"type": "integer",
+				"default": 10,
+				"minimum": 5,
+				"maximum": 250,
+				"maxLength": 5,
+				"propertyOrder": 25
+		},
+        "FabEquipo":
+		{
+			"title": "Fabricante del Equipo",
+			"description": "Fabricante Aerogenerador ensayado",
+            "type": "string",
+			"default":"FAB",
+			"propertyOrder": 30
+		},
+        "ModEquipo":
+		{
+			"title": "Modelo del Equipo",
+			"description": "Modelo de Aerogenerador ensayado",
+            "type": "string",
+			"default":"MOD",
+			"propertyOrder": 35
+		},
+        "DiamRotor":
+		{
+			"title": "Diametro del Rotor",
+			"description": "D [m] del Aerogenerador ensayado",
+            "type": "string",
+			"default":"D",
+			"propertyOrder": 40
+		},        
+        "AltRotor": {
+				"title": "Altura del Rotor [m]",
+				"description": "H [m] de torre del Aerogenerador ensayado (0-255)",
+				"type": "integer",
+				"default": 12,
+				"minimum": 0,
+				"maximum": 255,
+				"maxLength": 5,
+				"propertyOrder": 45
+		},
+        "PotNomEquip": {
+				"title": "Potencia nominal del equipo [W]",
+				"description": "P [W] nominal del Aerogenerador ensayado (0-32000)",
+				"type": "integer",
+				"default": 1000,
+				"minimum": 0,
+				"maximum": 32000,
+				"maxLength": 5,
+				"propertyOrder": 50
+		},        
+		"IDtest":
+		{
+			"title": "ID de la Prueba",
+			"description": "ID de la Prueba a realizar",
+			"type": "string",
+			"default":"",
+			"propertyOrder": 55
+		},
+        "NroEstac": {
+				"title": "Numero de la Estacion (1-254)",
+				"description": "Numero de la Estación ensay (1-254)",
+				"type": "integer",
+				"default": 2,
+				"minimum": 1,
+				"maximum": 254,
+				"maxLength": 5,
+				"propertyOrder": 60
+		},        
+        "DirModbus": {
+				"title": "Dirección Modbus de la Estacion (1-127)",
+				"description": "Dirección Modbus Estación ensayo (1-127)",
+				"type": "integer",
+				"default": 2,
+				"minimum": 1,
+				"maximum": 254,
+				"maxLength": 5,
+				"propertyOrder": 65
+		},        
+		"timeServer":
+		{
+			"title": "Timeserver NTP",
+			"description": "En blanco deshabilita NTP.",
+			"type": "string",
+			"default": "pool.ntp.org",
+			"propertyOrder":750
+		}
+	}
+}

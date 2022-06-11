@@ -1,0 +1,9 @@
+{
+ "host": "ESPWRC2",
+ "ssid": "INTI",
+ "password": "marzo082012",
+ "assid": "",
+ "apassword": "",
+ "offsetGMT": -1,
+ "timeServer": "pool.ntp.org"
+}

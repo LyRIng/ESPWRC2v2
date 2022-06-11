@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>ESPrinkler2 Status</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Foundation CSS framework (Bootstrap and jQueryUI also supported) -->
+    <link rel='stylesheet' href='/foundation.min.css'>
+    <script src="/jquery-3.2.1.min.js"></script>
+    <script src="/draggabilly.pkgd.min.js"></script>
+    <style>
+    .radius { border-radius: 3px; }
+    .button { border-radius: 5px; }
+    .callout { background-color: #ddd; }
+    </style>
+
+    <script>
+      /* global $, jQuery, Blob, FormData */  /* for eslint */
+
+      (function ($) {
+        $.fn.getLeftInPercent = function () {
+          var left = (parseFloat($(this).css('left'))) / parseFloat($(this).parent().css('width'));
+          return Math.round(100 * left);
+        };
+        $.fn.getTopInPercent = function () {
+          var top = (parseFloat($(this).css('top'))) / parseFloat($(this).parent().css('height'));
+          return Math.round(100 * top);
+        };
+      })(jQuery);
+
+      function getStatus () {
+        $.getJSON('status', function (data) {
+          $('.hostname').text(data.host);
+          document.title = data.host + ' Image';
+          for (var i = 0; i < 8; i++) {
+            let b = $('#zs' + i);
+            if (data['zone' + i] === 'on') {
+              b.removeClass('success');
+              b.addClass('alert');
+            } else {
+              b.removeClass('alert');
+              b.addClass('success');
+            }
+          }
+        });
+      }
+
+      function getButtons () {
+        // console.log('get config');
+        $.getJSON('buttons.json', function (data) {
+          for (var b in data) {
+            if (data.hasOwnProperty(b)) {
+              var i = data[b];
+              $('#' + b).css('top', i.top)
+                .css('left', i.left)
+                .css('position', 'absolute');
+            }
+          }
+        });
+      }
+
+      function saveButtons (data) {
+        var formData = new FormData();
+        formData.append('data', new Blob([data], { type: 'text/json' }), '/buttons.json');
+        $.ajax({
+          url: '/edit',
+          data: formData,
+          processData: false,
+          contentType: false,
+          type: 'POST'
+        }).done(function () {
+        });
+      }
+
+      var moving = false;
+
+      $(function () {
+        $.ajaxSetup({ cache: false });
+
+        $('#zclear').click(function () {
+          $.get('/clear', function (data) {
+            getStatus();
+          });
+        });
+
+        $('#refresh').click(function () {
+          getStatus();
+        });
+
+        $('.zones').draggabilly();
+        $('.zones').on('staticClick', function () {
+          if (moving) return;
+          let mm = this.id.match(/^zs([\d])/);
+          $.get('/toggle', { zone: mm[1] }, function () {
+            getStatus();
+          });
+        });
+        $('.zones').draggabilly('disable');
+        $('#moveer').click(function () {
+          moving = !moving;
+          if (moving) {
+            $(this).addClass('alert').text('Save Buttons');
+            $('.zones').draggabilly('enable');
+          } else {
+            $(this).removeClass('alert').text('Move Buttons');
+            $('.zones').draggabilly('disable');
+            var v = {};
+            $('.zones').each(function () {
+              var t = $(this);
+              var ptop = t.getTopInPercent(); // parseInt((t.offset().top) / t.parent().parent().height() * 100.0);
+              var pleft = t.getLeftInPercent(); // parseInt((t.offset().left) / t.parent().parent().width() * 100.0);
+              v[this.id] = { top: ptop + '%', left: pleft + '%' };
+            });
+            var data = JSON.stringify(v, null, 1);
+            saveButtons(data);
+          }
+        });
+
+        for (var i = 0; i < 8; i++) {
+          $('#zs' + i).css('top', '10%')
+          .css('left', ((i + 1) * 10) + '%')
+          .css('position', 'absolute');
+        }
+
+        getButtons();
+
+        getStatus();
+      });
+
+    </script>
+  </head>
+  <body>
+    <div class="row">
+      <div class="large-12 columns">
+        <div class="panel">
+          <h2><span class="hostname">ESPrinkler2</span> Status</h2>
+        </div>
+      </div>
+    </div>
+    <div class="row" >
+      <div class="medium-3 columns">
+        <a href="/" class='button'>Main</a>
+      </div>
+      <div class="medium-3 columns">
+        <button id='moveer' class='button'>Move Buttons</button>
+      </div>
+      <div class="medium-3 columns">
+        <a href="sched.html" class='button'>Schedules</a>
+      </div>
+    </div>
+    <div class="row">
+      <div class="small-12 columns">
+        <div class="panel">
+          <div class="row">
+            <div class="small-12 columns panel callout radius ">
+                <img src='image.jpg' style='position: relative; width:100%'>
+                  <button id='zs0' class='zones tiny button'>1</button>
+                  <button id='zs1' class='zones tiny button'>2</button>
+                  <button id='zs2' class='zones tiny button'>3</button>
+                  <button id='zs3' class='zones tiny button'>4</button>
+                  <button id='zs4' class='zones tiny button'>5</button>
+                  <button id='zs5' class='zones tiny button'>6</button>
+                  <button id='zs6' class='zones tiny button'>7</button>
+                  <button id='zs7' class='zones tiny button'>8</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
