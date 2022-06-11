@@ -1,4 +1,4 @@
-## ESPWRC2 v2 - Private repo
+## ESPWRC2 v2 - Updated example of ESP Firmware + CL2 communication
 (Original version 2021 - updated 05.2022)
 
 ### Introduction
